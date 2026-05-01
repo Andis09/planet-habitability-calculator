@@ -6,6 +6,9 @@ The Planet Habitability Score Calculator is a web-based application that estimat
 
 This project demonstrates how scientific concepts related to planetary habitability can be simplified and applied using programming and mathematical modeling.
 
+## Live Demo
+[View the Planet Habitability Score Calculator]
+https://andis09.github.io/planet-habitability-calculator/
 ---
 
 ## Features

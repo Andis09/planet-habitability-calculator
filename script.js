@@ -41,6 +41,16 @@ function loadPlanet() {
     }
 }
 
+function switchToCustom() {
+    let selected = document.getElementById("planetSelect").value;
+
+    if (selected !== "custom") {
+        document.getElementById("planetSelect").value = "custom";
+        updatePlanetBackground("default");
+        clearResultsOnly();
+    }
+}
+
 function calculateHabitability() {
     let distance = document.getElementById("distance").value;
     let temp = document.getElementById("temp").value;

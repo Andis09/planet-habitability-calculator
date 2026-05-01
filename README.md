@@ -20,6 +20,9 @@ This project demonstrates how scientific concepts related to planetary habitabil
 * Input validation to ensure accurate calculations
 * Reset functionality to clear inputs
 * Animated background representing the selected planet
+* Custom Planet option for manually entering data for planets outside the solar system
+* Empty input fields are visually greyed out to guide the user
+
 
 ---
 

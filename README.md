@@ -22,6 +22,7 @@ This project demonstrates how scientific concepts related to planetary habitabil
 * Animated background representing the selected planet
 * Custom Planet option for manually entering data for planets outside the solar system
 * Empty input fields are visually greyed out to guide the user
+* Automatically switches to Custom Planet when a preset planet value is edited
 
 
 ---

@@ -15,7 +15,7 @@ body {
     width: 260px;
     height: 260px;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #8fd3ff, #1d4ed8, #0b1020);
+    background: radial-gradient(circle, #8fd3ff, #1d4ed8, #0b1020);
     box-shadow: 0 0 50px rgba(143, 211, 255, 0.5);
     animation: floatPlanet 6s ease-in-out infinite;
     z-index: -1;
@@ -67,6 +67,24 @@ input, select, button {
     border: none;
 }
 
+/* Empty fields appear grey */
+input:placeholder-shown {
+    background-color: #d1d5db;
+    color: #374151;
+}
+
+/* Filled fields appear white */
+input:not(:placeholder-shown) {
+    background-color: white;
+    color: black;
+}
+
+/* Dropdowns stay white */
+select {
+    background-color: white;
+    color: black;
+}
+
 button {
     background-color: #3a86ff;
     color: white;
@@ -100,6 +118,14 @@ button:hover {
     padding: 15px;
     max-width: 420px;
     background-color: rgba(28, 37, 65, 0.9);
+    border-radius: 12px;
+}
+
+#explanation {
+    margin: 20px auto;
+    padding: 15px;
+    max-width: 420px;
+    background-color: rgba(15, 23, 42, 0.9);
     border-radius: 12px;
 }
 

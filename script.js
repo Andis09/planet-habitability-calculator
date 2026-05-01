@@ -14,6 +14,19 @@ const planets = {
 function loadPlanet() {
     let selected = document.getElementById("planetSelect").value;
 
+    if (selected === "custom") {
+        clearResultsOnly();
+
+        document.getElementById("distance").value = "";
+        document.getElementById("temp").value = "";
+        document.getElementById("mass").value = "";
+        document.getElementById("ecc").value = "";
+        document.getElementById("atm").value = "yes";
+
+        updatePlanetBackground("default");
+        return;
+    }
+
     if (selected && planets[selected]) {
         let p = planets[selected];
 
@@ -24,15 +37,26 @@ function loadPlanet() {
         document.getElementById("atm").value = p.atm;
 
         updatePlanetBackground(selected);
+        calculateHabitability();
     }
 }
 
 function calculateHabitability() {
-    let distance = Number(document.getElementById("distance").value);
-    let temp = Number(document.getElementById("temp").value);
-    let mass = Number(document.getElementById("mass").value);
-    let eccentricity = Number(document.getElementById("ecc").value);
+    let distance = document.getElementById("distance").value;
+    let temp = document.getElementById("temp").value;
+    let mass = document.getElementById("mass").value;
+    let eccentricity = document.getElementById("ecc").value;
     let atmosphere = document.getElementById("atm").value;
+
+    if (!distance || !temp || !mass || !eccentricity) {
+        alert("Please fill in all fields before calculating.");
+        return;
+    }
+
+    distance = Number(distance);
+    temp = Number(temp);
+    mass = Number(mass);
+    eccentricity = Number(eccentricity);
 
     let tempScore = 1 - Math.abs(temp - 288) / 200;
     let distanceScore = 1 - Math.abs(distance - 1) / 2;
@@ -73,15 +97,30 @@ function calculateHabitability() {
 
     document.getElementById("breakdown").innerHTML = `
         <h3>Score Breakdown</h3>
-        <p>Temperature Score: ${tempScore.toFixed(2)}</p>
-        <p>Distance Score: ${distanceScore.toFixed(2)}</p>
-        <p>Mass Score: ${massScore.toFixed(2)}</p>
-        <p>Eccentricity Score: ${eccScore.toFixed(2)}</p>
-        <p>Atmosphere Score: ${atmScore.toFixed(2)}</p>
+        <p>Temperature: ${tempScore.toFixed(2)}</p>
+        <p>Distance: ${distanceScore.toFixed(2)}</p>
+        <p>Mass: ${massScore.toFixed(2)}</p>
+        <p>Eccentricity: ${eccScore.toFixed(2)}</p>
+        <p>Atmosphere: ${atmScore.toFixed(2)}</p>
     `;
 
+    let explanation = "";
+
+    if (tempScore < 0.5) explanation += "Temperature is far from Earth-like. ";
+    if (distanceScore < 0.5) explanation += "Distance from the star is not ideal. ";
+    if (massScore < 0.5) explanation += "Planet mass is not suitable for stable conditions. ";
+    if (eccScore < 0.5) explanation += "Orbit is too unstable. ";
+    if (atmScore === 0) explanation += "No atmosphere detected. ";
+
+    if (explanation === "") {
+        explanation = "Conditions are very similar to Earth.";
+    }
+
+    document.getElementById("explanation").innerHTML =
+        `<b>Explanation:</b> ${explanation}`;
+
     let scores = [tempScore, distanceScore, massScore, eccScore, atmScore];
-    let labels = ["Temperature", "Distance", "Mass", "Eccentricity", "Atmosphere"];
+    let labels = ["Temp", "Distance", "Mass", "Ecc", "Atmosphere"];
 
     if (scoreChart) {
         scoreChart.destroy();
@@ -93,10 +132,7 @@ function calculateHabitability() {
         type: "bar",
         data: {
             labels: labels,
-            datasets: [{
-                label: "Factor Score",
-                data: scores
-            }]
+            datasets: [{ label: "Factor Score", data: scores }]
         },
         options: {
             scales: {
@@ -109,6 +145,22 @@ function calculateHabitability() {
     });
 }
 
+function clearResultsOnly() {
+    document.getElementById("result").innerText = "Habitability Score: --";
+
+    let ratingElement = document.getElementById("rating");
+    ratingElement.innerText = "";
+    ratingElement.className = "";
+
+    document.getElementById("breakdown").innerHTML = "";
+    document.getElementById("explanation").innerHTML = "";
+
+    if (scoreChart) {
+        scoreChart.destroy();
+        scoreChart = null;
+    }
+}
+
 function resetFields() {
     document.getElementById("planetSelect").value = "";
     document.getElementById("distance").value = "";
@@ -117,36 +169,24 @@ function resetFields() {
     document.getElementById("ecc").value = "";
     document.getElementById("atm").value = "yes";
 
-    document.getElementById("result").innerText = "Habitability Score: --";
-
-    let ratingElement = document.getElementById("rating");
-    ratingElement.innerText = "";
-    ratingElement.className = "";
-
-    document.getElementById("breakdown").innerHTML = "";
-
-    if (scoreChart) {
-        scoreChart.destroy();
-        scoreChart = null;
-    }
-
+    clearResultsOnly();
     updatePlanetBackground("default");
 }
 
 function updatePlanetBackground(planet) {
     let bg = document.getElementById("planetBackground");
 
-    const planetStyles = {
-        default: "radial-gradient(circle at 30% 30%, #8fd3ff, #1d4ed8, #0b1020)",
-        mercury: "radial-gradient(circle at 30% 30%, #d6d6d6, #777, #333)",
-        venus: "radial-gradient(circle at 30% 30%, #ffd27f, #c87932, #5c2e0e)",
-        earth: "radial-gradient(circle at 30% 30%, #8fd3ff, #1d8f4f, #123c69)",
-        mars: "radial-gradient(circle at 30% 30%, #ff9f6e, #c1440e, #451804)",
-        jupiter: "radial-gradient(circle at 30% 30%, #f5d6a2, #b77945, #5c4033)",
-        saturn: "radial-gradient(circle at 30% 30%, #f4e1a1, #c2a35b, #5c4a24)",
-        uranus: "radial-gradient(circle at 30% 30%, #b8ffff, #5ccfd6, #1b6670)",
-        neptune: "radial-gradient(circle at 30% 30%, #7aa7ff, #2454c6, #061a66)"
+    const styles = {
+        default: "radial-gradient(circle,#8fd3ff,#1d4ed8,#0b1020)",
+        mercury: "radial-gradient(circle,#ccc,#444)",
+        venus: "radial-gradient(circle,#ffd27f,#c87932)",
+        earth: "radial-gradient(circle,#8fd3ff,#1d8f4f)",
+        mars: "radial-gradient(circle,#ff9f6e,#c1440e)",
+        jupiter: "radial-gradient(circle,#f5d6a2,#b77945)",
+        saturn: "radial-gradient(circle,#f4e1a1,#c2a35b)",
+        uranus: "radial-gradient(circle,#b8ffff,#5ccfd6)",
+        neptune: "radial-gradient(circle,#7aa7ff,#2454c6)"
     };
 
-    bg.style.background = planetStyles[planet];
+    bg.style.background = styles[planet];
 }
